@@ -3,7 +3,8 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ArtistController;
 use App\Http\Controllers\AlbumController;
-use App\Http\Controllers\SongController;   // ✅ Added
+use App\Http\Controllers\SongController;
+use App\Http\Controllers\PlaylistController; // ✅ Added
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -43,8 +44,17 @@ Route::middleware('auth')->group(function () {
     // ✅ Album CRUD routes
     Route::resource('albums', AlbumController::class);
 
-    // ✅ Song CRUD routes (new)
+    // ✅ Song CRUD routes
     Route::resource('songs', SongController::class);
+
+    // ✅ Playlist CRUD routes
+    Route::resource('playlists', PlaylistController::class);
+
+    // ✅ Add/Remove songs inside a playlist
+    Route::post('playlists/{playlist}/add-song', [PlaylistController::class, 'addSong'])
+        ->name('playlists.addSong');
+    Route::delete('playlists/{playlist}/remove-song/{song}', [PlaylistController::class, 'removeSong'])
+        ->name('playlists.removeSong');
 });
 
 require __DIR__ . '/auth.php';
