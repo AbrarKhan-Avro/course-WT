@@ -23,7 +23,6 @@
         <tbody>
         @foreach($songs as $song)
             @php
-                // Convert duration (stored in seconds) to mm:ss format
                 $minutes = floor($song->duration / 60);
                 $seconds = $song->duration % 60;
             @endphp
@@ -36,7 +35,8 @@
                     @if($song->file_path)
                         <button class="btn btn-sm btn-primary play-btn"
                                 data-src="{{ asset('storage/' . $song->file_path) }}"
-                                data-title="{{ $song->title }} - {{ $song->artist->name }}">
+                                data-title="{{ $song->title }}"
+                                data-artist="{{ $song->artist->name }}">
                             ▶ Play
                         </button>
                     @else
