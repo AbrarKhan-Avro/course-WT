@@ -3,7 +3,6 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <title>{{ config('app.name', 'Rhythmix') }}</title>
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -11,21 +10,25 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Fonts -->
-    <link rel="dns-prefetch" href="//fonts.bunny.net">
+    <!-- Google Font (Nunito) -->
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        body { font-family: 'Nunito', sans-serif; }
+        .navbar-brand { font-weight: 700; letter-spacing: .5px; }
+        main.container { background:#fff; padding:2rem; border-radius: .75rem; box-shadow:0 0 15px rgba(0,0,0,0.05); }
+        #player-bar { box-shadow:0 -2px 6px rgba(0,0,0,.15); }
+    </style>
 </head>
 <body class="d-flex flex-column min-vh-100 bg-light">
 <div id="app">
     <!-- ================= NAVBAR ================= -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm mb-4">
         <div class="container">
             <a class="navbar-brand" href="{{ url('/') }}">
-                {{ config('app.name', 'Rhythmix') }}
+                🎵 {{ config('app.name', 'Rhythmix') }}
             </a>
-
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarNav" aria-controls="navbarNav"
                     aria-expanded="false" aria-label="Toggle navigation">
@@ -56,14 +59,12 @@
                     @else
                         <li class="nav-item dropdown">
                             <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
-                               data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                               data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 {{ Auth::user()->name }}
                             </a>
-
-                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <div class="dropdown-menu dropdown-menu-end">
                                 <a class="dropdown-item" href="{{ route('logout') }}"
-                                   onclick="event.preventDefault();
-                                            document.getElementById('logout-form').submit();">
+                                   onclick="event.preventDefault();document.getElementById('logout-form').submit();">
                                     Logout
                                 </a>
                                 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
@@ -112,7 +113,7 @@
 
 <!-- Global Player Script -->
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', () => {
     const audioPlayer  = document.getElementById('audio-player');
     const audioSource  = document.getElementById('audio-source');
     const titleEl      = document.getElementById('player-title');
@@ -121,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const nextBtn      = document.getElementById('next-btn');
     const prevBtn      = document.getElementById('prev-btn');
 
-    let playlist = [];      // Array of {src,title,artist}
+    let playlist = [];      // {src,title,artist}
     let currentIndex = -1;
     let isPlaying = false;
 
@@ -152,25 +153,19 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     nextBtn.addEventListener('click', () => {
-        if (playlist.length) {
-            const next = (currentIndex + 1) % playlist.length;
-            playSong(next);
-        }
+        if (playlist.length) playSong((currentIndex + 1) % playlist.length);
     });
 
     prevBtn.addEventListener('click', () => {
-        if (playlist.length) {
-            const prev = (currentIndex - 1 + playlist.length) % playlist.length;
-            playSong(prev);
-        }
+        if (playlist.length) playSong((currentIndex - 1 + playlist.length) % playlist.length);
     });
 
     audioPlayer.addEventListener('ended', () => {
         if (playlist.length > 1) nextBtn.click();
     });
 
-    // Add songs to queue and play
-    document.body.addEventListener('click', function (e) {
+    // Add song to queue
+    document.body.addEventListener('click', e => {
         if (e.target.classList.contains('play-btn')) {
             e.preventDefault();
             const songData = {
@@ -178,12 +173,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 title:  e.target.dataset.title,
                 artist: e.target.dataset.artist
             };
-            let index = playlist.findIndex(s => s.src === songData.src);
-            if (index === -1) {
+            let idx = playlist.findIndex(s => s.src === songData.src);
+            if (idx === -1) {
                 playlist.push(songData);
-                index = playlist.length - 1;
+                idx = playlist.length - 1;
             }
-            playSong(index);
+            playSong(idx);
         }
     });
 });
